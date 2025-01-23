@@ -10,7 +10,7 @@ class HTTPService {
     try{
     Response res = await _dio.get(path);
     } catch(e){
-      dbPrint(e);
+      dbPrint('HTTPService get() error $e');
     }
 
     return null;
