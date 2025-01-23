@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pokedex/models/page_data.dart';
 import 'package:pokedex/utils/helpers/get_screen_width_height.dart';
+import '../controllers/home_page_controller.dart';
 
-class HomePage extends StatefulWidget {
+final homePageControllerProvider = StateNotifierProvider<HomePageController, HomePageData>((ref){
+  return HomePageController(HomePageData.initial());
+});
+
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
+  late HomePageController _homePageController;
+  late HomePageData _homePageData;
+
   @override
   Widget build(BuildContext context) {
+    _homePageController = ref.watch(homePageControllerProvider.notifier);
+    _homePageData = ref.watch(homePageControllerProvider);
+
     return Scaffold(
       body: _buildUI(context),
     );
