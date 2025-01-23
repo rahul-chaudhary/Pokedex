@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokedex/models/page_data.dart';
+import 'package:pokedex/models/pokemon.dart';
 import 'package:pokedex/utils/helpers/get_screen_width_height.dart';
+import 'package:pokedex/widgets/pokemon_list_tile.dart';
 import '../controllers/home_page_controller.dart';
 
 final homePageControllerProvider = StateNotifierProvider<HomePageController, HomePageData>((ref){
@@ -63,10 +65,10 @@ class _HomePageState extends ConsumerState<HomePage> {
           SizedBox(
             height: getScreenHeight(context) * 0.6,
             child: ListView.builder(
+              itemCount: _homePageData.data?.results?.length ?? 0,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text('Pokemon $index'),
-                  );
+                PokemonListResult? pokemon = _homePageData.data?.results?[index];
+                  return PokemonListTile(pokemonURL: pokemon!.url!);
                 },),
           )
         ],
