@@ -8,7 +8,8 @@ class HTTPService {
 
   Future<Response?> get({required String path}) async {
     try{
-    Response res = await _dio.get(path);
+    Response? res = await _dio.get(path);
+    return res;
     } catch(e){
       dbPrint('HTTPService get() error $e');
     }
