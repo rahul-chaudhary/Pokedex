@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:pokedex/services/http_service.dart';
 import 'package:pokedex/utils/helpers/debug_print.dart';
 import '../models/page_data.dart';
+import '../models/pokemon.dart';
 
 class HomePageController extends StateNotifier<HomePageData> {
 
@@ -22,7 +23,13 @@ class HomePageController extends StateNotifier<HomePageData> {
   Future<void> _loadData() async {
     if(state.data == null) {
      Response? response = await _httpService.get(path: pokeAPIURL);
+     if(response != null && response.data != null) {
+       PokemonListData data = PokemonListData.fromJson(response.data);
+        state = state.copyWith(data: data);
+     }
+
      dbPrint('_loadData response ${response?.data}');
+
     } else{}
   }
 }
