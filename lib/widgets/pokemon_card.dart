@@ -8,24 +8,29 @@ import '../models/pokemon.dart';
 
 class PokemonCard extends ConsumerWidget {
   final String pokemonURL;
-  late final FavPokemonProvider _favPokemonProvider;
-  PokemonCard({super.key,required this.pokemonURL});
+
+  const PokemonCard({super.key, required this.pokemonURL});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    _favPokemonProvider = ref.watch(favPokemonProvider.notifier);
+    final favPokemonNotifier = ref.watch(favPokemonProvider.notifier);
     final pokemon = ref.watch(pokemonDataProvider(pokemonURL));
-    return pokemon.when(data: (data) {
-      return _card(context, isLoading: false, pokemon: data);
-    }, error: (error, stackTrace) {
-      return Text('Error: $error');
-    }, loading: () {
-      return _card(context, isLoading: true, pokemon: null);
-    });
+
+    return pokemon.when(
+      data: (data) {
+        return _card(context, isLoading: false, pokemon: data, favPokemonProvider: favPokemonNotifier);
+      },
+      error: (error, stackTrace) {
+        return Text('Error: $error');
+      },
+      loading: () {
+        return _card(context, isLoading: true, pokemon: null, favPokemonProvider: favPokemonNotifier);
+      },
+    );
   }
 
   Widget _card(BuildContext context,
-      {required bool isLoading, required Pokemon? pokemon}) {
+      {required bool isLoading, required Pokemon? pokemon, required FavPokemonProvider favPokemonProvider}) {
     return Skeletonizer(
       enabled: isLoading,
       ignoreContainers: true,
@@ -34,7 +39,7 @@ class PokemonCard extends ConsumerWidget {
         splashFactory: InkRipple.splashFactory,
         splashColor: Colors.white.withOpacity(0.5),
         onTap: () {
-          if(!isLoading){
+          if (!isLoading) {
             showDialog(
                 context: context,
                 builder: (_) {
@@ -103,16 +108,15 @@ class PokemonCard extends ConsumerWidget {
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
                   ),
-
-                   IconButton(
-                       onPressed: () {
-                          _favPokemonProvider.removeFavPokemon(pokemonURL);
-                       },
-                       icon:const Icon(
-                         Icons.favorite_rounded,
-                         color: Colors.red,
-                       ), ),
-
+                  IconButton(
+                    onPressed: () {
+                      favPokemonProvider.removeFavPokemon(pokemonURL);
+                    },
+                    icon: const Icon(
+                      Icons.favorite_rounded,
+                      color: Colors.red,
+                    ),
+                  ),
                 ],
               )
             ],
@@ -122,3 +126,4 @@ class PokemonCard extends ConsumerWidget {
     );
   }
 }
+
