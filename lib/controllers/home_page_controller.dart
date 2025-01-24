@@ -30,6 +30,14 @@ class HomePageController extends StateNotifier<HomePageData> {
 
      dbPrint('_loadData response ${response?.data}');
 
-    } else{}
+    } else{
+       if(state.data?.next != null) {
+         Response? res = await _httpService.get(path: state.data!.next!);
+
+         if(res != null && res.data != null) {
+           
+         }
+       }
+    }
   }
 }
