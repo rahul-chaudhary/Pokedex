@@ -7,11 +7,16 @@ import '../models/pokemon.dart';
 
 class PokemonListTile extends ConsumerWidget {
   final String pokemonURL;
+  late FavPokemonProvider _favPokemonProvider;
+  late List<String> _favPokemons;
 
-  const PokemonListTile({super.key, required this.pokemonURL});
+
+  PokemonListTile({super.key, required this.pokemonURL});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    _favPokemonProvider = ref.watch(favPokemonProvider.notifier);
+    _favPokemons = ref.watch(favPokemonProvider);
     final pokemon = ref.watch(pokemonDataProvider(pokemonURL));
     return pokemon.when(data: (data) {
       return _tile(context, isLoading: false, pokemon: data);
@@ -38,7 +43,16 @@ class PokemonListTile extends ConsumerWidget {
               : 'Currently Loading name for the Pokemon...'
           ),
           subtitle: Text('Has ${pokemon?.abilities?.length ?? 0} abilities'),
-          trailing: IconButton(onPressed: () {}, icon: const Icon(Icons.favorite_border_rounded)),
+          trailing: IconButton(
+              onPressed: () {
+                if (_favPokemons.contains(pokemonURL)) {
+                  _favPokemonProvider.removeFavPokemon(pokemonURL);
+                } else {
+                  _favPokemonProvider.addFavPokemon(pokemonURL);
+                }
+              }, icon: _favPokemons.contains(pokemonURL)
+              ? const Icon(Icons.favorite_rounded, color: Colors.red,)
+          : const Icon(Icons.favorite_border_rounded)),
         ));
   }
 }

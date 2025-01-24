@@ -14,3 +14,22 @@ final pokemonDataProvider = FutureProvider.family<Pokemon?, String>((ref, url) a
 
   return null;
 });
+
+final favPokemonProvider = StateNotifierProvider<FavPokemonProvider, List<String>>((ref){
+  return FavPokemonProvider([]);
+});
+class FavPokemonProvider extends StateNotifier<List<String>> {
+  FavPokemonProvider(super.state) {
+    _setup();
+  }
+  Future<void> _setup() async {
+
+  }
+
+  void addFavPokemon(String url) {
+    state = [...state, url];
+  }
+  void removeFavPokemon(String url) {
+    state = state.where((element) => element != url).toList();
+  }
+}
