@@ -31,28 +31,63 @@ class PokemonListTile extends ConsumerWidget {
       {required bool isLoading, Pokemon? pokemon}) {
     return Skeletonizer(
         enabled: isLoading,
-        child: ListTile(
-          leading: pokemon != null
-            ? CircleAvatar(backgroundImage: NetworkImage(pokemon.sprites!.frontDefault!),)
-          : const CircleAvatar(
-            backgroundColor: Colors.lightGreen,
+        child: InkWell(
+          splashColor: Colors.white.withOpacity(0.5),
+          splashFactory: InkRipple.splashFactory,
+          onTap: () {
+            if (!isLoading) {
+              showDialog(
+                  context: context,
+                  builder: (_) {
+                    return AlertDialog(
+                      title: const Text('Pokemon Stats'),
+                      content: pokemon != null
+                          ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: pokemon.stats?.map((s) {
+                          return ListTile(
+                            title: Text(s.stat?.name?.toUpperCase() ?? ''),
+                            subtitle: Text(s.baseStat.toString(),
+                              style: const TextStyle(fontWeight: FontWeight.bold),),
+                          );
+                        }).toList() ?? [],
+                      )
+                          : const CircularProgressIndicator(),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Close'),
+                        ),
+                      ],
+                    );
+                  });
+            }
+          },
+          child: ListTile(
+            leading: pokemon != null
+              ? CircleAvatar(backgroundImage: NetworkImage(pokemon.sprites!.frontDefault!),)
+            : const CircleAvatar(
+              backgroundColor: Colors.lightGreen,
+            ),
+            title: Text(
+                pokemon != null
+                ? pokemon.name!.toUpperCase()
+                : 'Currently Loading name for the Pokemon...'
+            ),
+            subtitle: Text('Has ${pokemon?.abilities?.length ?? 0} abilities'),
+            trailing: IconButton(
+                onPressed: () {
+                  if (_favPokemons.contains(pokemonURL)) {
+                    _favPokemonProvider.removeFavPokemon(pokemonURL);
+                  } else {
+                    _favPokemonProvider.addFavPokemon(pokemonURL);
+                  }
+                }, icon: _favPokemons.contains(pokemonURL)
+                ? const Icon(Icons.favorite_rounded, color: Colors.red,)
+            : const Icon(Icons.favorite_border_rounded)),
           ),
-          title: Text(
-              pokemon != null
-              ? pokemon.name!.toUpperCase()
-              : 'Currently Loading name for the Pokemon...'
-          ),
-          subtitle: Text('Has ${pokemon?.abilities?.length ?? 0} abilities'),
-          trailing: IconButton(
-              onPressed: () {
-                if (_favPokemons.contains(pokemonURL)) {
-                  _favPokemonProvider.removeFavPokemon(pokemonURL);
-                } else {
-                  _favPokemonProvider.addFavPokemon(pokemonURL);
-                }
-              }, icon: _favPokemons.contains(pokemonURL)
-              ? const Icon(Icons.favorite_rounded, color: Colors.red,)
-          : const Icon(Icons.favorite_border_rounded)),
         ));
   }
 }

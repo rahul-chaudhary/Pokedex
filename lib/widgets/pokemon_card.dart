@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pokedex/providers/pokemon_data_providers.dart';
 import 'package:pokedex/utils/helpers/get_screen_width_height.dart';
+import 'package:pokedex/widgets/pokemon_stats_card.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../models/pokemon.dart';
 
 class PokemonCard extends ConsumerWidget {
   final String pokemonURL;
-  late FavPokemonProvider _favPokemonProvider;
-  PokemonCard({super.key, required this.pokemonURL});
+  late final FavPokemonProvider _favPokemonProvider;
+  PokemonCard({super.key,required this.pokemonURL});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,7 +34,13 @@ class PokemonCard extends ConsumerWidget {
         splashFactory: InkRipple.splashFactory,
         splashColor: Colors.white.withOpacity(0.5),
         onTap: () {
-
+          if(!isLoading){
+            showDialog(
+                context: context,
+                builder: (_) {
+                  return PokemonStatsCard(pokemonURL: pokemonURL);
+                });
+          }
         },
         child: Container(
           padding: const EdgeInsets.all(10),
